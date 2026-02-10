@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useResume } from "../context/ResumeContext";
 import html2pdf from "html2pdf.js";
 import ResumeTemplateSelector from "../components/ResumeTemplateSelector";
-import { RESUME_TEMPLATES } from "../components/ResumeTemplateSelector";
+import { RESUME_TEMPLATES, ResumePreviewWithPagination } from "../components/ResumeTemplateSelector";
 import { SKILLS } from "../suggestions/skiils";
 import { COLLEGES } from "../suggestions/colleges";
 import { DEGREES } from "../suggestions/degrees";
 import { COMPANIES } from "../suggestions/companies";
 import AutoCompleteInput from "../components/AutoCompleteInput";
+import RichTextEditorWithReorder from "../components/Richtexteditorwithreorder";
+import '../index.css';
 
 const HomePage = () => {
   const {
@@ -759,22 +761,15 @@ const HomePage = () => {
                     }}
                     placeholder="Duration (e.g., Jan 2023 - Present)"
                   />
-                  <textarea
-                    value={experienceForm.description}
-                    onChange={(e) =>
-                      setExperienceForm({
-                        ...experienceForm,
-                        description: e.target.value,
-                      })
-                    }
-                    rows={4}
-                    className="w-full px-4 py-2 border-2 rounded-lg focus:outline-none resize-none"
-                    style={{
-                      borderColor: "#2DD4BF",
-                      backgroundColor: "#F0FDFA",
-                    }}
-                    placeholder="Describe your role and achievements..."
-                  />
+                  <RichTextEditorWithReorder
+  value={experienceForm.description}
+  onChange={(value) =>
+    setExperienceForm({
+      ...experienceForm,
+      description: value,
+    })
+  }
+/>
                   {editingExperience ? (
                     <div className="flex gap-2">
                       <button
@@ -838,12 +833,11 @@ const HomePage = () => {
                         <p className="text-xs" style={{ color: "#0D9488" }}>
                           {exp.duration}
                         </p>
-                        <p
-                          className="text-sm mt-2"
-                          style={{ color: "#134E4A" }}
-                        >
-                          {exp.description}
-                        </p>
+                        <div 
+  className="text-sm mt-2 resume-description"
+  style={{ color: "#134E4A" }}
+  dangerouslySetInnerHTML={{ __html: exp.description }}
+/>
                       </div>
                     ))}
                   </div>
@@ -1032,22 +1026,16 @@ const HomePage = () => {
                     }}
                     placeholder="Project Link"
                   />
-                  <textarea
-                    value={projectForm.description}
-                    onChange={(e) =>
-                      setProjectForm({
-                        ...projectForm,
-                        description: e.target.value,
-                      })
-                    }
-                    rows={4}
-                    className="w-full px-4 py-2 border-2 rounded-lg focus:outline-none resize-none"
-                    style={{
-                      borderColor: "#2DD4BF",
-                      backgroundColor: "#F0FDFA",
-                    }}
-                    placeholder="Project description..."
-                  />
+                  <RichTextEditorWithReorder
+  value={projectForm.description}
+  onChange={(value) =>
+    setProjectForm({
+      ...projectForm,
+      description: value,
+    })
+  }
+/>
+
                   {editingProject ? (
                     <div className="flex gap-2">
                       <button
@@ -1116,12 +1104,11 @@ const HomePage = () => {
                             {proj.link}
                           </a>
                         )}
-                        <p
-                          className="text-sm mt-2"
-                          style={{ color: "#134E4A" }}
-                        >
-                          {proj.description}
-                        </p>
+                        <div 
+  className="text-sm mt-2 resume-description"
+  style={{ color: "#134E4A" }}
+  dangerouslySetInnerHTML={{ __html: proj.description }}
+/>
                       </div>
                     ))}
                   </div>
@@ -1130,46 +1117,51 @@ const HomePage = () => {
             </div>
 
             {/* Right Panel - Preview */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 max-h-screen overflow-y-auto">
-              <h2
-                className="text-2xl font-bold mb-6"
-                style={{ color: "#134E4A" }}
-              >
-                Real-time Preview
-              </h2>
+            <div className="bg-white rounded-2xl shadow-xl p-8 max-h-[90vh] overflow-y-auto">
+  {/* Template Selector */}
+  <div className="mb-6">
+    <h3 className="text-sm font-bold mb-3" style={{ color: "#134E4A" }}>
+      Choose Template:
+    </h3>
+    <div className="grid grid-cols-3 gap-2">
+      {Object.entries(RESUME_TEMPLATES).map(([key, template]) => (
+        <button
+          key={key}
+          onClick={() => setSelectedTemplate(key)}
+          className={`p-2 rounded-lg border-2 text-xs font-medium transition-all ${
+            selectedTemplate === key 
+              ? 'ring-2 ring-offset-1 shadow-md' 
+              : 'hover:shadow-sm'
+          }`}
+          style={{
+            borderColor: selectedTemplate === key ? '#0D9488' : '#E5E7EB',
+            ringColor: selectedTemplate === key ? '#2DD4BF' : 'transparent',
+            color: '#134E4A'
+          }}
+        >
+          {template.name}
+        </button>
+      ))}
+    </div>
+  </div>
 
-              {/* Template Selector */}
-              <div className="mb-6">
-                <h3 className="text-sm font-bold mb-3" style={{ color: "#134E4A" }}>
-                  Choose Template:
-                </h3>
-                <div className="grid grid-cols-3 gap-2">
-                  {Object.entries(RESUME_TEMPLATES).map(([key, template]) => (
-                    <button
-                      key={key}
-                      onClick={() => setSelectedTemplate(key)}
-                      className={`p-2 rounded-lg border-2 text-xs font-medium transition-all ${
-                        selectedTemplate === key 
-                          ? 'ring-2 ring-offset-1 shadow-md' 
-                          : 'hover:shadow-sm'
-                      }`}
-                      style={{
-                        borderColor: selectedTemplate === key ? '#0D9488' : '#E5E7EB',
-                        ringColor: selectedTemplate === key ? '#2DD4BF' : 'transparent',
-                        color: '#134E4A'
-                      }}
-                    >
-                      {template.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
+  {/* Preview with Pagination */}
+  <div className="max-h-[70vh] overflow-y-auto border-t border-gray-200 pt-4">
+    <ResumePreviewWithPagination 
+      resumeData={resumeData}
+      selectedTemplate={selectedTemplate}
+    />
+  </div>
 
-              {/* Template Preview */}
-              <div id="template-pdf-content">
-                {currentTemplate.preview(resumeData)}
-              </div>
-            </div>
+  {/* Hidden content for PDF download */}
+  <div style={{ position: 'absolute', left: '-9999px' }}>
+    <div id="template-pdf-content">
+      {currentTemplate.preview(resumeData)}
+    </div>
+  </div>
+</div>
+
+
           </div>
         </main>
       </div>

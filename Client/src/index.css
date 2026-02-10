@@ -5,3 +5,53 @@
     }
   }
   
+
+  /* Add this CSS to your global stylesheet or create a new CSS file */
+
+/* Style for rendered HTML content in experience/project descriptions */
+.resume-description ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.resume-description li {
+  margin-bottom: 0.25rem;
+  line-height: 1.5;
+}
+
+.resume-description strong {
+  font-weight: 600;
+}
+
+.resume-description em {
+  font-style: italic;
+}
+
+.resume-description u {
+  text-decoration: underline;
+}
+
+/* Nested lists */
+.resume-description ul ul {
+  list-style-type: circle;
+  padding-left: 1.5rem;
+  margin-top: 0.25rem;
+}
+
+.resume-description ul ul ul {
+  list-style-type: square;
+}
+
+/* For the preview panel */
+.preview-description ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.25rem;
+}
+
+.preview-description li {
+  margin-bottom: 0.25rem;
+  line-height: 1.5;
+}
