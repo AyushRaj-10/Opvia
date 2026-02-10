@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useResume } from "../context/ResumeContext";
 import html2pdf from "html2pdf.js";
-import ResumeTemplateSelector from "../context/ResumeTemplateSelector";
-import { RESUME_TEMPLATES } from "../context/ResumeTemplateSelector";
+import ResumeTemplateSelector from "../components/ResumeTemplateSelector";
+import { RESUME_TEMPLATES } from "../components/ResumeTemplateSelector";
+import { SKILLS } from "../suggestions/skiils";
+import { COLLEGES } from "../suggestions/colleges";
+import { DEGREES } from "../suggestions/degrees";
+import { COMPANIES } from "../suggestions/companies";
+import AutoCompleteInput from "../components/AutoCompleteInput";
 
 const HomePage = () => {
   const {
@@ -111,8 +116,6 @@ const HomePage = () => {
     setRefreshKey((prev) => prev + 1);
   };
   
-
-
   useEffect(() => {
     loadResumes();
   }, []);
@@ -256,9 +259,6 @@ const HomePage = () => {
         duration: "",
         description: "",
       });
-
-
-
       alert("Experience updated!");
     } catch (error) {
       console.error("Failed to update experience:", error);
@@ -471,7 +471,6 @@ const HomePage = () => {
   };
 
   const handleDownloadResume = () => {
-    // Get the template preview element
     const element = document.getElementById("template-pdf-content");
     
     if (!element) {
@@ -730,22 +729,20 @@ const HomePage = () => {
                     }}
                     placeholder="Job Title"
                   />
-                  <input
-                    type="text"
+                  
+                  {/* Company Autocomplete */}
+                  <AutoCompleteInput
+                    data={COMPANIES}
+                    placeholder="Company"
                     value={experienceForm.company}
-                    onChange={(e) =>
+                    onChange={(value) =>
                       setExperienceForm({
                         ...experienceForm,
-                        company: e.target.value,
+                        company: value,
                       })
                     }
-                    className="w-full px-4 py-2 border-2 rounded-lg focus:outline-none"
-                    style={{
-                      borderColor: "#2DD4BF",
-                      backgroundColor: "#F0FDFA",
-                    }}
-                    placeholder="Company"
                   />
+                  
                   <input
                     type="text"
                     value={experienceForm.duration}
@@ -856,38 +853,32 @@ const HomePage = () => {
               {/* Education Tab */}
               {activeTab === "education" && (
                 <div className="space-y-4">
-                  <input
-                    type="text"
-                    value={educationForm.institution}
-                    onChange={(e) =>
-                      setEducationForm({
-                        ...educationForm,
-                        institution: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 border-2 rounded-lg focus:outline-none"
-                    style={{
-                      borderColor: "#2DD4BF",
-                      backgroundColor: "#F0FDFA",
-                    }}
+                  {/* Institution Autocomplete */}
+                  <AutoCompleteInput
+                    data={COLLEGES}
                     placeholder="Institution"
-                  />
-                  <input
-                    type="text"
-                    value={educationForm.degree}
-                    onChange={(e) =>
+                    value={educationForm.institution}
+                    onChange={(value) =>
                       setEducationForm({
                         ...educationForm,
-                        degree: e.target.value,
+                        institution: value,
                       })
                     }
-                    className="w-full px-4 py-2 border-2 rounded-lg focus:outline-none"
-                    style={{
-                      borderColor: "#2DD4BF",
-                      backgroundColor: "#F0FDFA",
-                    }}
-                    placeholder="Degree"
                   />
+                  
+                  {/* Degree Autocomplete */}
+                  <AutoCompleteInput
+                    data={DEGREES}
+                    placeholder="Degree"
+                    value={educationForm.degree}
+                    onChange={(value) =>
+                      setEducationForm({
+                        ...educationForm,
+                        degree: value,
+                      })
+                    }
+                  />
+                  
                   <input
                     type="text"
                     value={educationForm.duration}
@@ -977,21 +968,16 @@ const HomePage = () => {
               {activeTab === "skills" && (
                 <div className="space-y-4">
                   <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={skillInput}
-                      onChange={(e) => setSkillInput(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && handleAddSkill()}
-                      className="flex-1 px-4 py-2 border-2 rounded-lg focus:outline-none"
-                      style={{
-                        borderColor: "#2DD4BF",
-                        backgroundColor: "#F0FDFA",
-                      }}
+                    {/* Skills Autocomplete */}
+                    <AutoCompleteInput
+                      data={SKILLS}
                       placeholder="Add a skill"
+                      value={skillInput}
+                      onChange={(value) => setSkillInput(value)}
                     />
                     <button
                       onClick={handleAddSkill}
-                      className="px-6 py-2 rounded-lg font-medium text-white"
+                      className="px-6 py-2 rounded-lg font-medium text-white whitespace-nowrap"
                       style={{ backgroundColor: "#0D9488" }}
                     >
                       Add
@@ -1179,7 +1165,7 @@ const HomePage = () => {
                 </div>
               </div>
 
-              {/* Template Preview - This will be captured for PDF */}
+              {/* Template Preview */}
               <div id="template-pdf-content">
                 {currentTemplate.preview(resumeData)}
               </div>
