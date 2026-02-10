@@ -1,0 +1,20 @@
+services:
+  backend:
+    build:
+      context: ./server
+    volumes:
+      - ./server:/app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+
+  frontend:
+    build:
+      context: ./client
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://backend:3000
