@@ -1,54 +1,63 @@
 # Opvia - Resume Builder & ATS Checker
 
-A full-stack web application for creating professional resumes and checking their compatibility with Applicant Tracking Systems (ATS). Build, customize, and optimize your resume with real-time preview and PDF export capabilities.
+Full-stack web app to create ATS-friendly resumes, manage multiple versions, and check how well a resume matches a job description.
 
-## 🚀 Features
+## 🚀 Core Features
 
-### Resume Builder
-- **Interactive Editor**: Create and edit resumes with an intuitive interface
-- **Multiple Templates**: Choose from various professional resume templates
-- **Real-time Preview**: See your changes instantly as you edit
-- **PDF Export**: Download your resume as a professional PDF document
-- **CRUD Operations**: Create, read, update, and delete multiple resumes
-- **Comprehensive Sections**:
-  - Personal Information (name, email, phone, LinkedIn, portfolio)
-  - Professional Summary
-  - Work Experience
-  - Education
-  - Skills
-  - Projects
+### Resume Builder (Client)
+- **Dashboard of resumes**: List of saved resumes with edit and delete actions.
+- **Editor with tabs**:
+  - Personal info (name, email, phone, LinkedIn, portfolio)
+  - Summary
+  - Experience (CRUD with inline edit/delete)
+  - Education (CRUD with inline edit/delete)
+  - Skills (add/remove chips)
+  - Projects (CRUD with inline edit/delete)
+- **Template system**:
+  - Templates defined in `ResumeTemplateSelector` and selected via UI.
+  - Preview rendered in real time from the same data used to save the resume.
+- **PDF export**:
+  - Uses `html2pdf.js` on the preview container (`template-pdf-content`) to generate a resume PDF.
 
-### ATS Checker
-- **Keyword Matching**: Analyze how well your resume matches job descriptions
-- **Score Calculation**: Get an ATS compatibility score (0-100%)
-- **Keyword Analysis**: See matched and missing keywords
-- **PDF/DOCX Support**: Upload resumes in multiple formats
-- **Actionable Recommendations**: Get tips to improve your resume's ATS score
+### ATS Checker (Client + Server)
+- **Form**:
+  - Paste job description text.
+  - Upload resume file (PDF/DOC/DOCX).
+- **Server-side ATS check**:
+  - Extracts text from PDF using `pdf-parse`.
+  - Filters out stop words and short tokens.
+  - Compares JD keywords against resume words.
+  - Returns:
+    - ATS score (0–100)
+    - Matched keywords
+    - Missing keywords
+    - Keyword counts.
+- **UI feedback**:
+  - Colored score card and progress bar.
+  - Pills for matched/missing keywords.
+  - Simple recommendations based on score buckets.
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack (Current)
 
-### Frontend
-- **React 19** - UI library
-- **Vite** - Build tool and dev server
-- **Tailwind CSS 4** - Styling framework
-- **React Router** - Client-side routing
-- **Axios** - HTTP client
-- **html2pdf.js** - PDF generation
+### Client (`Client/`)
+- **React** + **Vite**
+- **React Router** (routes: `/` and `/ats-checker`)
+- **Tailwind CSS**
+- **Axios**
+- **html2pdf.js**
 
-### Backend
-- **Node.js** - Runtime environment
-- **Express 5** - Web framework
-- **MongoDB** - Database (via Mongoose)
-- **Multer** - File upload handling
-- **pdf-parse** - PDF text extraction
-- **Natural** - Natural language processing
+### Server (`Server/`)
+- **Node.js** / **Express**
+- **MongoDB** via **Mongoose**
+- **Multer** for uploads
+- **pdf-parse** for PDF text
+- **cors**, **dotenv**
 
 ## 📋 Prerequisites
 
-Before you begin, ensure you have the following installed:
-- **Node.js** (v18 or higher)
-- **npm** or **yarn**
-- **MongoDB** (local installation or MongoDB Atlas account)
+- **Node.js** (v18+)
+- **npm**
+- **MongoDB** (local or Atlas)
 
 ## 🔧 Installation
 
@@ -58,72 +67,64 @@ Before you begin, ensure you have the following installed:
    cd Resume
    ```
 
-2. **Install Client Dependencies**
+2. **Install client dependencies**
    ```bash
    cd Client
    npm install
    ```
 
-3. **Install Server Dependencies**
+3. **Install server dependencies**
    ```bash
    cd ../Server
    npm install
    ```
 
-4. **Set up Environment Variables**
+4. **Set up environment variables (Server/.env)**
 
-   Create a `.env` file in the `Server` directory:
    ```env
    MONGO_URI=your_mongodb_connection_string
    PORT=3000
    ```
 
-   For MongoDB Atlas:
-   ```env
-   MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/dbname?retryWrites=true&w=majority
-   ```
-
-   For local MongoDB:
-   ```env
-   MONGO_URI=mongodb://localhost:27017/resume_db
-   ```
+   - Example (Atlas): `mongodb+srv://username:password@cluster.mongodb.net/dbname`
+   - Example (local): `mongodb://localhost:27017/resume_db`
 
 ## 🚀 Running the Application
 
-### Development Mode
+### Development mode
 
-1. **Start the Backend Server**
+1. **Start the backend**
    ```bash
    cd Server
    npm start
    ```
    The server will run on `http://localhost:3000`
 
-2. **Start the Frontend Development Server**
+2. **Start the frontend**
    ```bash
    cd Client
    npm run dev
    ```
    The client will run on `http://localhost:5173` (or another port if 5173 is busy)
 
-3. **Access the Application**
+3. **Access the application**
    - Open your browser and navigate to `http://localhost:5173`
    - The frontend will communicate with the backend API
 
-### Production Build
+### Production build (client only)
 
-1. **Build the Frontend**
+1. **Build the frontend**
    ```bash
    cd Client
    npm run build
    ```
 
-2. **Serve the Production Build**
+2. **Serve the build (preview)**
    ```bash
    npm run preview
    ```
 
-## 📁 Project Structure
+## 📁 Project Structure (current)
 
 ```
 Resume/
@@ -160,56 +161,51 @@ Resume/
 
 ## 🔌 API Endpoints
 
-### Resume Endpoints
+### Resume endpoints
 
-- `GET /api/resumes` - Get all resumes
-- `GET /api/resumes/:id` - Get a specific resume
-- `POST /api/resumes` - Create a new resume
-- `PUT /api/resumes/:id/personal` - Update personal information
-- `PUT /api/resumes/:id/summary` - Update summary
-- `POST /api/resumes/:id/skills` - Add a skill
-- `DELETE /api/resumes/:id/skills` - Delete a skill
-- `POST /api/resumes/:id/experience` - Add work experience
-- `PUT /api/resumes/:id/experience/:experienceId` - Update experience
-- `DELETE /api/resumes/:id/experience/:experienceId` - Delete experience
-- `POST /api/resumes/:id/education` - Add education
-- `PUT /api/resumes/:id/education/:educationId` - Update education
-- `DELETE /api/resumes/:id/education/:educationId` - Delete education
-- `POST /api/resumes/:id/projects` - Add a project
-- `PUT /api/resumes/:id/projects/:projectId` - Update project
-- `DELETE /api/resumes/:id/projects/:projectId` - Delete project
-- `DELETE /api/resumes/:id` - Delete a resume
+- `GET /api/resumes` – get all resumes
+- `GET /api/resumes/:id` – get a resume by id
+- `POST /api/resumes` – create a new resume
+- `PUT /api/resumes/:id/personal` – update personal information
+- `PUT /api/resumes/:id/summary` – update summary
+- `POST /api/resumes/:id/skills` – add a skill
+- `DELETE /api/resumes/:id/skills` – delete a skill
+- `POST /api/resumes/:id/experience` – add work experience
+- `PUT /api/resumes/:id/experience/:experienceId` – update experience
+- `DELETE /api/resumes/:id/experience/:experienceId` – delete experience
+- `POST /api/resumes/:id/education` – add education
+- `PUT /api/resumes/:id/education/:educationId` – update education
+- `DELETE /api/resumes/:id/education/:educationId` – delete education
+- `POST /api/resumes/:id/projects` – add a project
+- `PUT /api/resumes/:id/projects/:projectId` – update project
+- `DELETE /api/resumes/:id/projects/:projectId` – delete project
+- `DELETE /api/resumes/:id` – delete a resume
 
-### ATS Checker Endpoints
+### ATS checker endpoint
 
-- `POST /api/ats/check` - Check resume against job description
-  - **Body**: `multipart/form-data`
-    - `resume`: PDF or DOCX file
-    - `jobDescription`: Text string
+- `POST /api/ats/check` – check resume against job description  
+  **Body**: `multipart/form-data`
+  - `resume`: PDF or DOCX file
+  - `jobDescription`: text
 
-## 💡 Usage Guide
+## 💡 Usage (frontend flows)
 
-### Creating a Resume
+### Creating and managing resumes
 
-1. Click "Start Building" on the homepage
-2. Fill in your personal information in the "Personal" tab
-3. Add sections using the tabs:
-   - **Summary**: Write a professional summary
-   - **Experience**: Add work experience entries
-   - **Education**: Add educational background
-   - **Skills**: Add relevant skills
-   - **Projects**: Add portfolio projects
-4. Choose a template from the preview panel
-5. Click "Download Resume" to export as PDF
+1. Go to `/` (Home).
+2. Click **Start Building** to create a new resume.
+3. Use the left panel tabs to fill in all sections.
+4. Switch templates in the preview panel to see different layouts.
+5. Use **Download Resume** in the editor header to export a PDF.
+6. Use **My Resumes** on the home page to open or delete existing resumes.
 
-### Using the ATS Checker
+### Running an ATS check
 
-1. Navigate to the ATS Checker page
-2. Paste the job description in the text area
-3. Upload your resume (PDF or DOCX format)
-4. Click "Check ATS Score"
-5. Review your score and recommendations
-6. Use the matched/missing keywords to optimize your resume
+1. Navigate to `/ats-checker` (or click **ATS** in the header).
+2. Paste the job description.
+3. Upload your resume file.
+4. Click **Check ATS Score**.
+5. Use the missing keywords list to update your resume in the builder.
 
 ## 🎨 Customization
 
@@ -229,57 +225,13 @@ The ATS checking algorithm is in `Server/controllers/ats.controller.js`. You can
 - Scoring algorithm
 - Minimum keyword length
 
-## 🐛 Troubleshooting
+## 🐛 Troubleshooting (quick)
 
-### MongoDB Connection Issues
+- **MongoDB connection**: check `MONGO_URI`, IP whitelist (Atlas), or that local Mongo is running.
+- **File upload**: ensure `Server/uploads/` exists and accepts writes; only PDF/DOC/DOCX are supported.
+- **CORS**: server uses `cors()` globally; if you change ports or origins, update CORS config accordingly.
 
-- **Atlas Connection**: Ensure your IP is whitelisted in MongoDB Atlas Network Access
-- **Local MongoDB**: Make sure MongoDB is running: `mongodb://localhost:27017`
-- **Connection String**: Verify your `MONGO_URI` in the `.env` file is correct
+## 📝 Notes
 
-### File Upload Issues
-
-- Ensure the `Server/uploads/` directory exists and has write permissions
-- Check file size limits in `multer` configuration
-- Verify file format (PDF or DOCX)
-
-### CORS Errors
-
-- Ensure CORS is enabled in `Server/server.js`
-- Verify the frontend URL matches the CORS origin configuration
-
-## 📝 Environment Variables
-
-Create a `.env` file in the `Server` directory with:
-
-```env
-MONGO_URI=your_mongodb_connection_string
-PORT=3000
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the ISC License.
-
-## 👤 Author
-
-Created with ❤️ for job seekers everywhere.
-
-## 🙏 Acknowledgments
-
-- React team for the amazing framework
-- Express.js for the robust backend framework
-- MongoDB for the flexible database solution
-- All open-source contributors whose packages made this project possible
-
----
-
-**Note**: Make sure to keep your MongoDB connection string secure and never commit it to version control. Use environment variables for all sensitive configuration.
+- Keep your MongoDB connection string in `.env` and out of version control.
+- Client and server run independently; make sure both are running in development.
