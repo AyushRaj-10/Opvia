@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
 
 const ResumeSchema = new mongoose.Schema({
-    ownerId:{
-        type:String,
-        required:true
-    },
     personal:{
         name:{
             type:String,

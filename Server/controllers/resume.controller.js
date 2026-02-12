@@ -1,6 +1,6 @@
 import { Resume } from "../models/resume.model.js";
 import mongoose from "mongoose";
-import {v4 as uuid} from 'uuid'
+
 
 export const createResume = async (req, res) => {
     try {
@@ -19,7 +19,6 @@ export const createResume = async (req, res) => {
             experience: [],
             projects: [],
             education: [],
-            certifications: [],
         });
 
         await newResume.save();
@@ -29,27 +28,29 @@ export const createResume = async (req, res) => {
             resume: newResume,
         });
     } catch (error) {
+        console.error("createResume error:", error);
         res.status(500).json({
             message: "Error creating resume",
             error: error.message,
+            stack: error.stack,
         });
     }
 };
 
-export const getResumeByOwnerId = async (req, res) => {
-    try {
-        const { ownerId } = req.params;
+// export const getResumeByOwnerId = async (req, res) => {
+//     try {
+//         const { ownerId } = req.params;
 
-        const resumes = await Resume.find({ ownerId });
+//         const resumes = await Resume.find({ ownerId });
 
-        res.status(200).json(resumes);
-    } catch (error) {
-        res.status(500).json({
-            message: "Error fetching resumes",
-            error: error.message
-        });
-    }
-};
+//         res.status(200).json(resumes);
+//     } catch (error) {
+//         res.status(500).json({
+//             message: "Error fetching resumes",
+//             error: error.message
+//         });
+//     }
+// };
 
 
 export const deleteResume = async (req, res) => {
