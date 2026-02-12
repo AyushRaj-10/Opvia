@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 
 // 5 Different Resume Templates - VERTICAL PAGES VERSION
 export const RESUME_TEMPLATES = {

@@ -345,7 +345,11 @@ const HomePage = () => {
       setExperiences(r.experience || []); setEducations(r.education || []); setProjects(r.projects || []);
     } catch(e) { console.error(e); }
   };
-  useEffect(() => { refreshCurrentResume(); }, [refreshKey]);
+  useEffect(() => { 
+    if (currentResume?._id) {
+      refreshCurrentResume(); 
+    }
+  }, [refreshKey, currentResume?._id]);
   useEffect(() => { loadResumes(); },          []);
 
   const loadResumes = async () => {
