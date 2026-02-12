@@ -465,12 +465,34 @@ const HomePage = () => {
   const handleDownloadResume = () => {
     const el = document.getElementById("template-pdf-content");
     if (!el) { alert("Resume preview not found!"); return; }
-    html2pdf().set({
-      margin:0.5, filename:`${personalInfo.name || "resume"}.pdf`,
-      image:{ type:"jpeg", quality:0.98 },
-      html2canvas:{ scale:2, useCORS:true, logging:false, letterRendering:true, backgroundColor:"#ffffff" },
-      jsPDF:{ unit:"in", format:"letter", orientation:"portrait" }
-    }).from(el).save();
+html2pdf().set({
+  margin: 0,
+  filename: `${personalInfo.name || "resume"}.pdf`,
+
+  image: {
+    type: "jpeg",
+    quality: 1
+  },
+
+  html2canvas: {
+    scale: 2,                 // 1:1 DOM capture
+    useCORS: true,
+    backgroundColor: "#ffffff",
+    windowWidth: 816,
+    windowHeight: 1056
+  },
+
+  jsPDF: {
+    unit: "mm",
+    format: [210, 297],       // TRUE A4
+    orientation: "portrait",
+    compress: true
+  }
+})
+.from(el)
+.save();
+
+
   };
 
   const resumeData      = { personalInfo, summary, skills, experiences, educations, projects };
