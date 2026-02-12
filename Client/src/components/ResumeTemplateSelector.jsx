@@ -707,6 +707,8 @@ blueprint: {
 };
 
 // Wrapper component that shows all pages vertically with proper scaling
+// Add these fixes to your ResumePreviewWithPagination component
+
 export const ResumePreviewWithPagination = ({ 
   resumeData, 
   selectedTemplate 
@@ -718,11 +720,12 @@ export const ResumePreviewWithPagination = ({
 
   const currentTemplate = RESUME_TEMPLATES[selectedTemplate];
 
-  // Calculate number of pages
+  // Calculate number of pages with proper A4 dimensions
   useEffect(() => {
     if (contentRef.current) {
       const height = contentRef.current.scrollHeight;
-      const pageHeight = 880; // A4 height at 96 DPI
+      // A4 at 96 DPI: 816px x 1056px (instead of 880)
+      const pageHeight = 1056; 
       const pages = Math.ceil(height / pageHeight);
       setTotalPages(pages);
     }
@@ -734,7 +737,7 @@ export const ResumePreviewWithPagination = ({
       if (containerRef.current) {
         const containerWidth = containerRef.current.offsetWidth;
         const pageWidth = 816; // A4 width at 96 DPI
-        const newScale = Math.min(1, (containerWidth - 32) / pageWidth); // 32px for padding
+        const newScale = Math.min(1, (containerWidth - 32) / pageWidth);
         setScale(newScale);
       }
     };
@@ -744,7 +747,6 @@ export const ResumePreviewWithPagination = ({
     return () => window.removeEventListener('resize', updateScale);
   }, []);
 
-  // Create array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
@@ -753,48 +755,53 @@ export const ResumePreviewWithPagination = ({
         Real-time Preview
       </h2>
       
-      {/* Container with vertical scroll only */}
       <div 
         ref={containerRef}
         className="w-full overflow-y-auto overflow-x-hidden"
-        style={{ maxHeight: 'calc(100vh - 200px)' }}
+        style={{ maxHeight: 'calc(100vh - 120px)' }}
       >
-        {/* Vertically stacked pages */}
         <div className="flex flex-col items-center gap-8 pb-8">
           {pageNumbers.map((pageNum) => (
             <div
               key={pageNum}
-              className="relative border-2 rounded-lg shadow-lg bg-white"
+              className="relative rounded-lg shadow-lg bg-white"
               style={{
-                width: '860px',
-                minHeight: '880px',
-                borderColor: '#2DD4BF',
+                width: '816px',
+                height: '1056px',
+                border: '2px solid #2DD4BF',
                 transform: `scale(${scale})`,
                 transformOrigin: 'top center',
-                marginBottom: pageNum < totalPages ? `${-880 * (1 - scale)}px` : '0'
+                marginBottom: pageNum < totalPages ? `${-1056 * (1 - scale)}px` : '0',
+                // Add box-sizing to ensure consistent rendering
+                boxSizing: 'border-box'
               }}
             >
-              {/* Page content */}
               <div
                 ref={pageNum === 1 ? contentRef : null}
                 className="w-full h-full overflow-hidden"
                 style={{
-                  height: '880px',
-                  position: 'relative'
+                  height: '1056px',
+                  position: 'relative',
+                  boxSizing: 'border-box'
                 }}
               >
                 {pageNum === 1 ? (
-                  // Render full content on first page
-                  <div>{currentTemplate.preview(resumeData)}</div>
+                  <div style={{ 
+                    width: '100%', 
+                    height: '100%',
+                    boxSizing: 'border-box'
+                  }}>
+                    {currentTemplate.preview(resumeData)}
+                  </div>
                 ) : (
-                  // Show continuation on subsequent pages
                   <div
                     style={{
-                      transform: `translateY(-${(pageNum - 1) * 860}px)`,
+                      transform: `translateY(-${(pageNum - 1) * 1056}px)`,
                       position: 'absolute',
                       top: 0,
                       left: 0,
-                      width: '100%'
+                      width: '100%',
+                      boxSizing: 'border-box'
                     }}
                   >
                     {currentTemplate.preview(resumeData)}
@@ -802,7 +809,6 @@ export const ResumePreviewWithPagination = ({
                 )}
               </div>
               
-              {/* Page number indicator */}
               <div 
                 className="absolute bottom-4 right-4 text-xs font-medium px-3 py-1.5 rounded shadow-sm"
                 style={{ 
@@ -818,28 +824,62 @@ export const ResumePreviewWithPagination = ({
         </div>
       </div>
 
-      {/* Print styles */}
+      {/* Updated print styles for better PDF matching */}
       <style>{`
+        /* Ensure consistent box-sizing */
+        *, *::before, *::after {
+          box-sizing: border-box;
+        }
+        
         .page-break-avoid {
           page-break-inside: avoid;
           break-inside: avoid;
         }
         
+        /* Consistent list styling */
         .preview-description ul,
         .resume-description ul {
           list-style-type: disc;
           margin-left: 1.5em;
           margin-top: 0.5em;
+          margin-bottom: 0.5em;
+          padding-left: 0;
         }
         
         .preview-description li,
         .resume-description li {
           margin-bottom: 0.25em;
+          line-height: 1.5;
+        }
+        
+        /* Consistent paragraph spacing */
+        .preview-description p,
+        .resume-description p {
+          margin-top: 0;
+          margin-bottom: 0.5em;
+        }
+        
+        /* Ensure consistent font rendering */
+        .preview-description,
+        .resume-description {
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
         }
         
         @media print {
+          @page {
+            size: A4;
+            margin: 0;
+          }
+          
+          body {
+            margin: 0;
+            padding: 0;
+          }
+          
           .page-break-avoid {
             page-break-inside: avoid;
+            break-inside: avoid;
           }
         }
       `}</style>
