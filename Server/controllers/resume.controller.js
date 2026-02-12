@@ -32,6 +32,7 @@ export const createResume = async (req, res) => {
         res.status(500).json({
             message: "Error creating resume",
             error: error.message,
+   
         });
     }
 };
