@@ -9,6 +9,9 @@ const ATSChecker = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+const url =
+ `${import.meta.env.VITE_BACKEND_URL}`  || "http://localhost:3000";
+
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -34,7 +37,7 @@ const ATSChecker = () => {
       formData.append("jobDescription", jd);
 
       const res = await axios.post(
-        "http://localhost:3000/api/ats/check",
+        `${url}/api/ats/check`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" }
