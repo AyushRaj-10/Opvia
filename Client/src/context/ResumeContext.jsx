@@ -6,7 +6,7 @@ const ResumeContext = createContext();
 
 // Backend URL
 const url =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api/resumes";
+ `${import.meta.env.VITE_BACKEND_URL}/api/resumes`  || "http://localhost:3000/api/resumes";
 
 // Provider Component
 export const ResumeProvider = ({ children }) => {
