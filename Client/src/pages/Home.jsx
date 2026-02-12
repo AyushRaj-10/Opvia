@@ -131,29 +131,28 @@ const HomePage = () => {
     }
   };
 
-  const handleCreateResume = async () => {
-    console.log("🔥 handleCreateResume clicked");
-    setLoading(true);
-    try {
-      const newResume = await createResume(
-        { name: "", email: "", phone: "", linkedIn: "", portfolio: "" },
-        "",
-        [],
-        [],
-        [],
-        [],
-        []
-      );
-      setCurrentResume(newResume.resume);
-      setShowEditor(true);
-      await loadResumes();
-      console.log("⬅️ after createResume", newResume);
-    } catch (e) {
-      console.error("❌ error", e);
-    } finally {
-      setLoading(false);
-    }
-  };
+const handleCreateResume = async () => {
+  setLoading(true);
+  try {
+    const response = await createResume({
+      name: "Untitled Resume",
+      email: "",
+      phone: "",
+      linkedIn: "",
+      portfolio: "",
+    });
+
+    // ✅ BACKEND RETURNS { resumeId, resume }
+    setCurrentResume(response.resume);
+    setShowEditor(true);
+    await loadResumes();
+  } catch (e) {
+    console.error("❌ error", e);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleUpdatePersonal = async () => {
     if (!currentResume) return;

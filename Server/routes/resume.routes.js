@@ -4,7 +4,7 @@ import {
     getResumeById,
     deleteResume,
     getAllResumes,
-    getResumeByOwnerId,
+   //  getResumeByOwnerId,
 
     updatePersonal,
     updateSummary,
@@ -30,15 +30,16 @@ const router = express.Router();
 // Create resume
 router.post("/", createResume);
 
+//get All
+router.get("/", getAllResumes);
+
 // Get resume by ID
 router.get("/:id", getResumeById);
-router.get('/owner/:ownerId', getResumeByOwnerId)
+// router.get('/owner/:ownerId', getResumeByOwnerId)
 
 // Delete resume
 router.delete("/:id", deleteResume);
 
-//get All
-router.get("/", getAllResumes);
 
 
 /* =======================
